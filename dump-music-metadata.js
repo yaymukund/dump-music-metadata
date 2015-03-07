@@ -29,7 +29,7 @@ var _processFolder = function(dirpath) {
 
     counter.progress('dirs', 'Finished '+res.folder.path);
     res.folder.tracks = res.tracks;
-    return store.create(res.folder);
+    return store.append(res.folder);
   });
 };
 

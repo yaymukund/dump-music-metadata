@@ -6,6 +6,8 @@ var getUnprocessed = require('./lib/get-unprocessed'),
     utils = require('./lib/utils'),
     path = require('path');
 
+utils.RSVP.on('error', console.log);
+
 var _processFolder = function(dirpath) {
   var opts = { cwd: dirpath },
       tracks = utils.glob('**/*.@(mp3|flac)', opts).then(function(filepaths) {
@@ -25,9 +27,7 @@ var _processFolder = function(dirpath) {
       return;
     }
 
-    console.log('Finished '+res.folder.name);
-    counter.progress('dirs');
-
+    counter.progress('dirs', 'Finished '+res.folder.path);
     res.folder.tracks = res.tracks;
     return store.create(res.folder);
   });
@@ -38,9 +38,7 @@ var _processFile = function(filepath) {
     folder: makeFolder(filepath),
     track: makeTrack(filepath)
   }).then(function(res) {
-    console.log('Finished '+res.folder.name);
-    counter.progress('tracks');
-
+    counter.progress('tracks', 'Finished '+res.folder.path);
     res.folder.tracks = [res.track];
     return store.create(res.folder);
   });

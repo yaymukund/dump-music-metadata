@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+var store = require('../lib/store')._store;
+store.ensureIndex({ fieldName: 'name', unique: true }, function(err) {
+  console.log('Index for name created successfully.');
+});

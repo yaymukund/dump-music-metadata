@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+var store = require('../lib/store');
+store.compact();

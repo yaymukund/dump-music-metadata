@@ -1,8 +1,8 @@
-var getFolders = require('./get-folders'),
-    makeFolder = require('./make-folder'),
-    makeTrack = require('./make-track'),
-    store = require('./store'),
-    utils = require('./utils'),
+var getFolders = require('./lib/get-folders'),
+    makeFolder = require('./lib/make-folder'),
+    makeTrack = require('./lib/make-track'),
+    store = require('./lib/store'),
+    utils = require('./lib/utils'),
     path = require('path');
 
 var totalCount, processedCount = 0;

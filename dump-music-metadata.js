@@ -46,13 +46,16 @@ var _processFile = function(filepath) {
 
 getUnprocessed('*/').then(function(dirpaths) {
   counter.create('dirs', dirpaths.length);
-  return dirpaths.map(_processFolder);
+  return utils.RSVP.all(dirpaths.map(_processFolder));
 }).then(function() {
   console.log('Finished queuing folders');
   return getUnprocessed('*.@(mp3|flac|ogg|m4a)');
 }).then(function(filepaths) {
   counter.create('tracks', filepaths.length);
-  return filepaths.map(_processFile);
+  return utils.RSVP.all(filepaths.map(_processFile));
 }).then(function() {
-  console.log('Finished queuing tracks');
+  console.log('Flushing store');
+  return store.flush();
+}).then(function() {
+  console.log('Finished writing tracks');
 }).catch(console.log);

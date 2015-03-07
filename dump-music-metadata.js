@@ -10,7 +10,7 @@ utils.RSVP.on('error', console.log);
 
 var _processFolder = function(dirpath) {
   var opts = { cwd: dirpath },
-      tracks = utils.glob('**/*.@(mp3|flac)', opts).then(function(filepaths) {
+      tracks = utils.glob('**/*.@(mp3|flac|ogg|m4a)', opts).then(function(filepaths) {
         filepaths = filepaths.map(function(p) {
           return dirpath + '/'+p;
         });
@@ -49,7 +49,7 @@ getUnprocessed('*/').then(function(dirpaths) {
   return dirpaths.map(_processFolder);
 }).then(function() {
   console.log('Finished queuing folders');
-  return getUnprocessed('*.@(mp3|flac)');
+  return getUnprocessed('*.@(mp3|flac|ogg|m4a)');
 }).then(function(filepaths) {
   counter.create('tracks', filepaths.length);
   return filepaths.map(_processFile);

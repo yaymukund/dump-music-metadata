@@ -20,7 +20,7 @@ var _processFolder = function(dirpath) {
     tracks: tracks
   }).then(function(res) {
     var name = utils.nameFor(dirpath);
-    if (!tracks.length) {
+    if (!res.tracks.length) {
       console.log('Nothing found in '+res.folder.name);
       return;
     }

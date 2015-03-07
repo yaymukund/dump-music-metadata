@@ -11,26 +11,15 @@ var progress = function(msg) {
   console.log(msg+' '+ (++processedCount) +'/'+totalCount);
 };
 
-var _isFolderProcessed = function(dirpath) {
-  return store.exists({ name: utils.nameFor(dirpath) });
-};
-
 var _processFolder = function(dirpath) {
-  _isFolderProcessed(dirpath).then(function(isProcessed) {
-    if (isProcessed) {
-      progress('Skipping track');
-      return null;
-    }
+  var tracks = utils.glob('**/*.@(mp3|flac)', { cwd: dirpath }).then(function(filepaths) {
+    filepaths = filepaths.map(function(p) { return dirpath + '/'+p; });
+    return utils.RSVP.all(filepaths.map(makeTrack));
+  });
 
-    var tracks = utils.glob('**/*.@(mp3|flac)', { cwd: dirpath }).then(function(filepaths) {
-      filepaths = filepaths.map(function(p) { return dirpath + '/'+p; });
-      return utils.RSVP.all(filepaths.map(makeTrack));
-    });
-
-    return utils.RSVP.hash({
-      folder: makeFolder(dirpath),
-      tracks: tracks
-    })
+  utils.RSVP.hash({
+    folder: makeFolder(dirpath),
+    tracks: tracks
   }).then(function(res) {
     if (!res) {
       return store.findBy({ name: utils.nameFor(dirpath) });
@@ -44,6 +33,7 @@ var _processFolder = function(dirpath) {
 
 getFolders().then(function(dirpaths) {
   totalCount = dirpaths.length;
+  console.log('Todo: '+totalCount+' tracks');
   return dirpaths.map(_processFolder);
 }).then(function() {
   console.log('Finished processing folders');

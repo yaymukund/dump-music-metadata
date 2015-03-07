@@ -1,0 +1,16 @@
+{
+  "name": "music-metadata",
+  "version": "1.0.0",
+  "description": "Parse metadata from a music library into JSON.",
+  "main": "dump-music-metadata.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "glob": "^4.4.2",
+    "musicmetadata": "^1.0.0",
+    "rsvp": "^3.0.17"
+  }
+}

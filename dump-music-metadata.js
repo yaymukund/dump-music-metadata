@@ -40,7 +40,7 @@ var _processFile = function(filepath) {
   }).then(function(res) {
     counter.progress('tracks', 'Finished '+res.folder.path);
     res.folder.tracks = [res.track];
-    return store.create(res.folder);
+    return store.append(res.folder);
   });
 };
 

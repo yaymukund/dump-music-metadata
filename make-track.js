@@ -1,6 +1,7 @@
 var fs = require('fs'),
     utils = require('./utils'),
-    mm = utils.denodeify(require('musicmetadata'));
+    mm = utils.denodeify(require('musicmetadata')),
+    path = require('path');
 
 module.exports = function(filepath) {
   var stream = fs.createReadStream(filepath);
@@ -13,7 +14,8 @@ module.exports = function(filepath) {
       artist: tags.artist.join(', '),
       year: tags.year,
       track_number: tags.track.no,
-      genre: tags.genre
+      genre: tags.genre,
+      filepath: path.relative(process.argv[2], filepath)
     };
   });
 };

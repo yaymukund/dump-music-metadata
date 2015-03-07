@@ -22,7 +22,7 @@ var _processFolder = function(dirpath) {
       return null;
     }
 
-    var tracks = utils.glob('*.@(mp3|flac)', { cwd: dirpath }).then(function(filepaths) {
+    var tracks = utils.glob('**/*.@(mp3|flac)', { cwd: dirpath }).then(function(filepaths) {
       filepaths = filepaths.map(function(p) { return dirpath + '/'+p; });
       return utils.RSVP.all(filepaths.map(makeTrack));
     });

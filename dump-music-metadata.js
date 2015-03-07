@@ -19,9 +19,16 @@ var _processFolder = function(dirpath) {
     folder: makeFolder(dirpath),
     tracks: tracks
   }).then(function(res) {
-    if (!tracks.length) { return; }
-    res.folder.tracks = res.tracks;
+    var name = utils.nameFor(dirpath);
+    if (!tracks.length) {
+      console.log('Nothing found in '+res.folder.name);
+      return;
+    }
+
+    console.log('Finished '+res.folder.name);
     counter.progress('dirs');
+
+    res.folder.tracks = res.tracks;
     return store.create(res.folder);
   });
 };
@@ -31,8 +38,10 @@ var _processFile = function(filepath) {
     folder: makeFolder(filepath),
     track: makeTrack(filepath)
   }).then(function(res) {
-    res.folder.tracks = [res.track];
+    console.log('Finished '+res.folder.name);
     counter.progress('tracks');
+
+    res.folder.tracks = [res.track];
     return store.create(res.folder);
   });
 };

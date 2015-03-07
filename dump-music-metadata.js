@@ -19,6 +19,7 @@ var _processFolder = function(dirpath) {
     folder: makeFolder(dirpath),
     tracks: tracks
   }).then(function(res) {
+    if (!tracks.length) { return; }
     res.folder.tracks = res.tracks;
     counter.progress('dirs');
     return store.create(res.folder);
@@ -40,11 +41,11 @@ getUnprocessed('*/').then(function(dirpaths) {
   counter.create('dirs', dirpaths.length);
   return dirpaths.map(_processFolder);
 }).then(function() {
-  console.log('Finished processing folders');
+  console.log('Finished queuing folders');
   return getUnprocessed('*.@(mp3|flac)');
 }).then(function(filepaths) {
   counter.create('tracks', filepaths.length);
   return filepaths.map(_processFile);
 }).then(function() {
-  console.log('Finished processing tracks');
+  console.log('Finished queuing tracks');
 }).catch(console.log);

@@ -1,4 +1,5 @@
-var RSVP = exports.RSVP = require('rsvp'),
+var path = require('path'),
+    RSVP = exports.RSVP = require('rsvp'),
     Store = exports.Store = require('nedb');
 
 var _makeCallback = function(deferred) {
@@ -20,6 +21,11 @@ exports.denodeify = function(fn) {
     fn.apply(null, args)
     return d.promise;
   };
+};
+
+exports.nameFor = function(dirpath) {
+  var name = path.relative(process.argv[2], dirpath);
+  return name.split(path.sep)[0];
 };
 
 exports.glob = exports.denodeify(require('glob'));

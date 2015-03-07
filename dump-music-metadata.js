@@ -7,18 +7,20 @@ var getFolders = require('./get-folders'),
 
 var totalCount, processedCount = 0;
 
-var _nameFor = function(dirpath) {
-  var name = path.relative(process.argv[2], dirpath);
-  return name.split(path.sep)[0];
+var progress = function(msg) {
+  console.log(msg+' '+ (++processedCount) +'/'+totalCount);
 };
 
 var _isFolderProcessed = function(dirpath) {
-  return store.exists({ name: _nameFor(dirpath) });
+  return store.exists({ name: utils.nameFor(dirpath) });
 };
 
 var _processFolder = function(dirpath) {
   _isFolderProcessed(dirpath).then(function(isProcessed) {
-    if (isProcessed) { return null }
+    if (isProcessed) {
+      progress('Skipping track');
+      return null;
+    }
 
     var tracks = utils.glob('*.@(mp3|flac)', { cwd: dirpath }).then(function(filepaths) {
       filepaths = filepaths.map(function(p) { return dirpath + '/'+p; });
@@ -31,11 +33,11 @@ var _processFolder = function(dirpath) {
     })
   }).then(function(res) {
     if (!res) {
-      return store.findBy({ name: _nameFor(dirpath) });
+      return store.findBy({ name: utils.nameFor(dirpath) });
     };
 
     res.folder.tracks = res.tracks;
-    console.log('Creating '+ (++processedCount) +'/'+totalCount);
+    progress('Creating track');
     return store.create(res.folder);
   });
 };

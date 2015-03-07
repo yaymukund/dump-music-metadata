@@ -11,11 +11,8 @@ var _getCreatedAt = function(dirpath) {
 
 module.exports = function(dirpath) {
   return _getCreatedAt(dirpath).then(function(createdAt) {
-    var name = path.relative(process.argv[2], dirpath);
-    name = name.split(path.sep)[0];
-
     return {
-      name: name,
+      name: utils.nameFor(dirpath),
       created_at: createdAt,
       tracks: []
     };

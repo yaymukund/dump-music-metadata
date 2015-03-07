@@ -23,7 +23,7 @@ var _processFolder = function(dirpath) {
   }).then(function(res) {
     var name = utils.nameFor(dirpath);
     if (!res.tracks.length) {
-      console.log('Nothing found in '+res.folder.name);
+      console.log('Nothing found in '+res.folder.path);
       return;
     }
 

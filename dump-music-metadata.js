@@ -7,7 +7,7 @@ var counter = require('./lib/counter'),
     utils = require('./lib/utils'),
     path = require('path');
 
-utils.RSVP.on('error', console.log);
+utils.RSVP.on('error', function(err) { throw err; });
 
 var _initializeStore = function() {
   return utils.mkdirp(process.argv[3]).then(function() {
@@ -46,7 +46,10 @@ var _processFile = function(filepath) {
     track: makeTrack(filepath)
   }).then(function(res) {
     counter.progress('tracks', 'Finished '+res.folder.path);
-    return writer.writeJson(res);
+    return writer.writeJson({
+      folder: res.folder,
+      tracks: [res.track]
+    });
   });
 };
 
@@ -61,4 +64,7 @@ _initializeStore().then(getFolders).then(function(dirpaths) {
   return utils.RSVP.all(filepaths.map(_processFile));
 }).then(function() {
   console.log('Finished writing tracks');
-}).catch(console.log);
+  return writer.writeEntireDB();
+}).then(function() {
+  console.log('Written db to store.json');
+});

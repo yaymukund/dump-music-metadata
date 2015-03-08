@@ -3,7 +3,7 @@ var counter = require('./lib/counter'),
     makeTrack = require('./lib/make-track'),
     getFiles = require('./lib/get-files'),
     getFolders = require('./lib/get-folders'),
-    writeJson = require('./lib/write-json'),
+    writer = require('./lib/writer'),
     utils = require('./lib/utils'),
     path = require('path');
 
@@ -23,14 +23,15 @@ var _processFolder = function(dirpath) {
     folder: makeFolder(dirpath),
     tracks: tracks
   }).then(function(res) {
-    var name = utils.nameFor(dirpath);
     if (!res.tracks.length) {
       counter.progress('dirs', 'Nothing found in '+res.folder.path);
+      var name = utils.nameFor(dirpath);
+      writer.touch(name)
       return;
     }
 
     counter.progress('dirs', 'Finished '+res.folder.path);
-    return writeJson(res);
+    return writer.writeJson(res);
   });
 };
 
@@ -40,7 +41,7 @@ var _processFile = function(filepath) {
     track: makeTrack(filepath)
   }).then(function(res) {
     counter.progress('tracks', 'Finished '+res.folder.path);
-    return writeJson(res);
+    return writer.writeJson(res);
   });
 };
 

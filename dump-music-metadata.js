@@ -18,17 +18,27 @@ var _initializeStore = function() {
 var _processFolder = function(dirpath) {
   var opts = { cwd: dirpath },
       tracks = utils.glob('**/*.@(mp3|flac|ogg|m4a)', opts).then(function(filepaths) {
-        filepaths = filepaths.map(function(p) {
-          return path.join(dirpath, p);
+        var promises = filepaths.map(function(p) {
+          p = path.join(dirpath, p);
+          return makeTrack(p).catch(function(err) {
+            if (/Could not read any data from this stream/.test(err.message)) {
+              // If we error on an a blank file, swallow the error.
+              return;
+            } else {
+              throw err;
+            }
+          });
         });
 
-        return utils.RSVP.all(filepaths.map(makeTrack));
+        return utils.RSVP.all(promises);
       });
 
   return utils.RSVP.hash({
     folder: makeFolder(dirpath),
     tracks: tracks
   }).then(function(res) {
+    res.tracks = utils.compact(res.tracks);
+
     if (!res.tracks.length) {
       counter.progress('dirs', 'Nothing found in '+res.folder.path);
       var name = utils.nameFor(dirpath);

@@ -7,7 +7,9 @@ var counter = require('./lib/counter'),
     utils = require('./lib/utils'),
     path = require('path');
 
-utils.RSVP.on('error', function(err) { throw err; });
+utils.RSVP.on('error', function(err) {
+  console.log(err.message, err.stack);
+});
 
 var _initializeStore = function() {
   return utils.mkdirp(process.argv[3]).then(function() {

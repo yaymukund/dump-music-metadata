@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "glob": "^4.4.2",
+    "mkdirp": "^0.5.0",
     "musicmetadata": "^1.0.0",
     "nedb": "^1.1.1",
     "rsvp": "^3.0.17"

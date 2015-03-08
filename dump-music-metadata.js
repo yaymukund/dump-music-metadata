@@ -9,6 +9,12 @@ var counter = require('./lib/counter'),
 
 utils.RSVP.on('error', console.log);
 
+var _initializeStore = function() {
+  return utils.mkdirp(process.argv[3]).then(function() {
+    return writer.createEmpty();
+  });
+};
+
 var _processFolder = function(dirpath) {
   var opts = { cwd: dirpath },
       tracks = utils.glob('**/*.@(mp3|flac|ogg|m4a)', opts).then(function(filepaths) {
@@ -26,8 +32,7 @@ var _processFolder = function(dirpath) {
     if (!res.tracks.length) {
       counter.progress('dirs', 'Nothing found in '+res.folder.path);
       var name = utils.nameFor(dirpath);
-      writer.touch(name)
-      return;
+      return writer.writeEmpty(name);
     }
 
     counter.progress('dirs', 'Finished '+res.folder.path);
@@ -45,7 +50,7 @@ var _processFile = function(filepath) {
   });
 };
 
-getFolders().then(function(dirpaths) {
+_initializeStore().then(getFolders).then(function(dirpaths) {
   counter.create('dirs', dirpaths.length);
   return utils.RSVP.all(dirpaths.map(_processFolder));
 }).then(function() {

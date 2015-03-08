@@ -34,7 +34,11 @@ var _processFolder = function(dirpath) {
   }).then(function(res) {
     res.tracks = utils.compact(res.tracks);
 
-    if (!res.tracks.length) {
+    var isAllErrors = res.tracks.every(function(t) {
+      return !!t.error;
+    });
+
+    if (!res.tracks.length || isAllErrors) {
       counter.progress('dirs', 'Nothing found in '+res.folder.path);
       var name = utils.nameFor(dirpath);
       return writer.writeEmpty(name);

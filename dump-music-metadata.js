@@ -75,5 +75,5 @@ _initializeStore().then(getFolders).then(function(dirpaths) {
   console.log('Finished writing tracks');
   return writer.writeEntireDB();
 }).then(function() {
-  console.log('Written db to store.json');
+  console.log('Written db to '+process.argv[4]);
 });

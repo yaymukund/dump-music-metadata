@@ -19,7 +19,7 @@ var _initializeStore = function() {
 
 var _processFolder = function(dirpath) {
   var opts = { cwd: dirpath },
-      tracks = utils.glob('**/*.@(mp3|flac|ogg|m4a)', opts).then(function(filepaths) {
+      tracks = utils.glob('**/*.@(mp3|ogg|m4a)', opts).then(function(filepaths) {
         var promises = filepaths.map(function(p) {
           p = path.join(dirpath, p);
           return makeTrack(p);

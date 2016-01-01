@@ -36,6 +36,7 @@ function filenameFor(filepath) {
   return filepath.substr(start, end - start);
 }
 
+let trackId = 0;
 function makeTrack(filepath) {
   let output = fs.readFileSync(filepath, { encoding: 'utf8' }),
       track = {};
@@ -49,6 +50,7 @@ function makeTrack(filepath) {
     }
   });
 
+  track.id = trackId++;
   track.title = track.title || filenameFor(track.original_path);
   track.album = track.album || '?';
   track.artist = track.artist || '?';

@@ -64,7 +64,7 @@ function makeTrack(filepath) {
 }
 
 function getCreatedAt(filepath) {
-  filepath = path.join(__dirname, musicRoot, filepath);
+  filepath = path.resolve(musicRoot, filepath);
   return fs.statSync(filepath).mtime;
 }
 

@@ -1,4 +1,6 @@
 'use strict';
+const TAG_LINE_REGEX = /^(filename|duration|title|album|date|track|artist|TAG:artist|TAG:title|TAG:album|TAG:track|TAG:date)=(.+)$/;
+
 let fs = require('fs'),
     path = require('path'),
     directory = process.argv[2],
@@ -23,8 +25,8 @@ function readFiles(directory) {
   });
 }
 
-function pathFor(json) {
-  return path.relative(musicRoot, json.filename);
+function pathFor(filepath) {
+  return path.relative(musicRoot, filepath);
 }
 
 function filenameFor(filepath) {
@@ -35,28 +37,29 @@ function filenameFor(filepath) {
 }
 
 function makeTrack(filepath) {
-  let json = require(filepath).format,
-      track;
+  let output = fs.readFileSync(filepath, { encoding: 'utf8' }),
+      track = {};
 
-  json.tags = json.tags || {};
-  filepath = pathFor(json);
+  output.split("\n").forEach(line => {
+    let match = line.match(TAG_LINE_REGEX);
 
-  track = {
-    id: tracks.length,
-    title: json.title || json.tags.title || filenameFor(filepath),
-    album: json.album || json.tags.album || '?',
-    artist: json.artist || json.tags.artist || '?',
-    date: json.date || json.tags.date || '?',
-    path: filepath.replace('#', '%23'),
-    duration: json.duration
-  };
+    if (match) {
+      let key = match[1].replace('TAG:', '');
+      track[key] = match[2];
+    }
+  });
 
-  track.track = json.track || json.tags.track;
+  track.title = track.title || filenameFor(track.filename);
+  track.album = track.album || '?';
+  track.artist = track.artist || '?';
+  track.date = track.date || '?';
+  track.path = pathFor(track.filename).replace('#', '%23');
 
   if (track.track) {
     track.trackNumber = _getTrackNumber(track.track);
   }
 
+  delete track.filename;
   tracks.push(track);
 }
 
@@ -103,22 +106,26 @@ function generateIndex() {
 console.log(`Reading files from ${directory}`);
 
 readFiles(directory).then(files => {
+  console.log('Building tracks list...');
   files.forEach(file => {
     let filepath = path.join(__dirname, directory, file);
     makeTrack(filepath);
   });
 
+  console.log('Building folders list...');
   tracks.forEach(track => {
     let folder = makeFolderFor(track);
     track.folder_id = folder.id;
   });
 
+  console.log('Building metadata_index...');
   let indexJson = generateIndex(),
       json = {
         tracks,
         folders: Array.from(folders.values())
       };
 
+  console.log('Writing metadata files...');
   fs.writeFileSync('metadata.json', JSON.stringify(json));
   fs.writeFileSync('metadata_index.json', JSON.stringify(indexJson));
 });

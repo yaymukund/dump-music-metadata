@@ -36,22 +36,28 @@ function filenameFor(filepath) {
 
 function makeTrack(filepath) {
   let json = require(filepath).format,
-      track = json.track || json.tags.track,
-      trackNumber = _getTrackNumber(track);
+      track;
 
+  json.tags = json.tags || {};
   filepath = pathFor(json);
 
-  tracks.push({
+  track = {
     id: tracks.length,
     title: json.title || json.tags.title || filenameFor(filepath),
     album: json.album || json.tags.album || '?',
     artist: json.artist || json.tags.artist || '?',
     date: json.date || json.tags.date || '?',
     path: filepath.replace('#', '%23'),
-    duration: json.duration,
-    track,
-    trackNumber
-  });
+    duration: json.duration
+  };
+
+  track.track = json.track || json.tags.track;
+
+  if (track.track) {
+    track.trackNumber = _getTrackNumber(track.track);
+  }
+
+  tracks.push(track);
 }
 
 function getCreatedAt(filepath) {

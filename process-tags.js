@@ -25,7 +25,7 @@ function readFiles(directory) {
   });
 }
 
-function pathFor(filepath) {
+function relativePathFor(filepath) {
   return path.relative(musicRoot, filepath);
 }
 
@@ -53,13 +53,12 @@ function makeTrack(filepath) {
   track.album = track.album || '?';
   track.artist = track.artist || '?';
   track.date = track.date || '?';
-  track.path = pathFor(track.original_path).replace('#', '%23');
+  track.path = relativePathFor(track.original_path).replace('#', '%23');
 
   if (track.track) {
     track.trackNumber = _getTrackNumber(track.track);
   }
 
-  delete track.original_path;
   tracks.push(track);
 }
 
@@ -80,8 +79,14 @@ function _makeFolder(folderPath) {
   return folder;
 }
 
+function _folderPathFor(track) {
+  let filepath = relativePathFor(track.original_path);
+  return path.dirname(filepath);
+}
+
 function makeFolderFor(track) {
-  let folderPath = path.dirname(track.path);
+  let folderPath = _folderPathFor(track);
+  delete track.original_path;
 
   if (folderPath === '.') {
     folderPath = track.path;

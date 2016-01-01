@@ -12,14 +12,27 @@ get_md5() {
   fi
 }
 
+get_tags() {
+  avprobe -loglevel quiet \
+          -of json \
+          -show_format "$1"
+}
+
 tag() {
   tag_file="tags.cache/$(get_md5 $1).json"
 
   if [[ ! -e $tag_file ]]; then
     echo "Tagging $1"
-    avprobe -loglevel quiet \
-            -of json \
-            -show_format "$1" > $tag_file
+
+    json=$(get_tags $1)
+
+    if [ $? -eq 0 ]; then
+      echo $json > $tag_file
+    else
+      echo "Errored on $1 ($tag_file) with:" > tag.error.log
+      echo $json > tag.error.log
+    fi
+
   # else
   #   echo "Skipping $1 because $tag_file exists"
   fi

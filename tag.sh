@@ -27,6 +27,9 @@ tag() {
 
     if [ $? -eq 0 ]; then
       echo $tags > $tag_file
+      # This is necessary because avprobe does a terrible job escaping the
+      # filename field.
+      echo "original_path=$1" >> $tag_file
     else
       echo "Errored on $1 ($tag_file) with:" > tag.error.log
       echo $tags > tag.error.log

@@ -1,5 +1,5 @@
 'use strict';
-const TAG_LINE_REGEX = /^(filename|duration|title|album|date|track|artist|TAG:artist|TAG:title|TAG:album|TAG:track|TAG:date)=(.+)$/;
+const TAG_LINE_REGEX = /^(original_path|duration|title|album|date|track|artist|TAG:artist|TAG:title|TAG:album|TAG:track|TAG:date)=(.+)$/;
 
 let fs = require('fs'),
     path = require('path'),
@@ -49,17 +49,17 @@ function makeTrack(filepath) {
     }
   });
 
-  track.title = track.title || filenameFor(track.filename);
+  track.title = track.title || filenameFor(track.original_path);
   track.album = track.album || '?';
   track.artist = track.artist || '?';
   track.date = track.date || '?';
-  track.path = pathFor(track.filename).replace('#', '%23');
+  track.path = pathFor(track.original_path).replace('#', '%23');
 
   if (track.track) {
     track.trackNumber = _getTrackNumber(track.track);
   }
 
-  delete track.filename;
+  delete track.original_path;
   tracks.push(track);
 }
 

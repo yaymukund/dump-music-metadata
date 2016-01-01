@@ -27,7 +27,7 @@ tag() {
     json=$(get_tags $1)
 
     if [ $? -eq 0 ]; then
-      echo $json > $tag_file
+      echo $json | tr '\n' ' ' > $tag_file
     else
       echo "Errored on $1 ($tag_file) with:" > tag.error.log
       echo $json > tag.error.log

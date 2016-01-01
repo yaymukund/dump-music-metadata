@@ -1,6 +1,19 @@
 #!/usr/bin/env zsh
+# http://stackoverflow.com/a/677212
+command_exists() {
+  type "$1" &> /dev/null
+}
+
+get_md5() {
+  if command_exists md5; then
+    md5 -qs $1
+  else
+    echo $1 | md5sum | awk '{ print $1 }'
+  fi
+}
+
 tag() {
-  tag_file="tags.cache/$(md5 -qs $1).json"
+  tag_file="tags.cache/$(get_md5 $1).json"
 
   if [[ ! -e $tag_file ]]; then
     echo "Tagging $1"

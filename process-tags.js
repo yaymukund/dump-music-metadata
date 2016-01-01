@@ -24,8 +24,7 @@ function readFiles(directory) {
 }
 
 function pathFor(json) {
-  // Slice off the root music dir as well as a trailing '/'
-  return json.filename.slice(musicRoot.length + 1);
+  return path.relative(musicRoot, json.filename);
 }
 
 function filenameFor(filepath) {

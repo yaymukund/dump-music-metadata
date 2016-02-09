@@ -27,10 +27,11 @@ get_tags() {
 }
 
 tag() {
-  echo "Tagging $1"
   tag_file="$tag_root/$(get_md5 $1).tags"
 
   if [[ ! -e $tag_file ]]; then
+    echo "Tagging $1"
+
     if [[ ${errored_files[(r)$1]} == $1 ]]; then
       echo "Skipping $1, already errored."
       return 0

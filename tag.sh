@@ -50,8 +50,8 @@ tag() {
       echo $1 >> $tag_errors_file
     fi
 
-  else
-    echo "Skipping $1 because $tag_file exists"
+#  else
+#    echo "Skipping $1 because $tag_file exists"
   fi
 }
 

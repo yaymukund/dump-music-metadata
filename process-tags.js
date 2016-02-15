@@ -13,12 +13,13 @@ function _getTrackNumber(num) {
   return parseInt(num, 10);
 }
 
-function readFiles(directory) {
+function readTags(directory) {
   return new Promise((resolve, reject) => {
     fs.readdir(directory, (err, files) => {
       if (err) {
         reject(err);
       } else {
+        files = files.filter(f => f.endsWith('.tags'));
         resolve(files);
       }
     });
@@ -112,7 +113,7 @@ function generateIndex() {
 
 console.log(`Reading files from ${directory}`);
 
-readFiles(directory).then(files => {
+readTags(directory).then(files => {
   console.log('Building tracks list...');
   files.forEach(file => {
     let filepath = path.join(__dirname, directory, file);

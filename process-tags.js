@@ -56,7 +56,7 @@ function makeTrack(filepath) {
   track.album = track.album || '?';
   track.artist = track.artist || '?';
   track.date = track.date || '?';
-  track.path = relativePathFor(track.original_path).replace('#', '%23');
+  track.path = relativePathFor(track.original_path).replace(/#/g, '%23');
 
   if (track.track) {
     track.trackNumber = _getTrackNumber(track.track);

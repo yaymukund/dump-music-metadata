@@ -1,12 +1,13 @@
 'use strict';
 const TAG_LINE_REGEX = /^(original_path|duration|title|album|date|track|artist|TAG:artist|TAG:title|TAG:album|TAG:track|TAG:date)=(.+)$/;
 
-let fs = require('fs'),
-    path = require('path'),
-    directory = process.argv[2],
-    musicRoot = process.argv[3],
-    tracks = [],
-    folders = new Map();
+let fs = require('fs');
+let path = require('path');
+let directory = process.argv[2];
+let musicRoot = process.argv[3];
+let tracks = [];
+let folders = new Map();
+let ProgressBar = require('progress');
 
 function _getTrackNumber(num) {
   num = num || 0;
@@ -114,16 +115,27 @@ function generateIndex() {
 console.log(`Reading files from ${directory}`);
 
 readTags(directory).then(files => {
-  console.log('Building tracks list...');
+  let progress = new ProgressBar('[:bar] :current/:total Building tracks list...', {
+    clear: true,
+    total: files.length
+  });
+
   files.forEach(file => {
     let filepath = path.join(__dirname, directory, file);
     makeTrack(filepath);
+    progress.tick();
+  });
+
+  progress = new ProgressBar('[:bar] :current/:total Building folders list...', {
+    clear: true,
+    total: tracks.length
   });
 
   console.log('Building folders list...');
   tracks.forEach(track => {
     let folder = makeFolderFor(track);
     track.folder_id = folder.id;
+    progress.tick();
   });
 
   console.log('Building metadata_index...');

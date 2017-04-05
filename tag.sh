@@ -55,7 +55,6 @@ tag() {
 }
 
 FILES_COUNT=$(find $1 -type f -name "*.mp3" | wc -l)
-((FILES_COUNT -= 1)) # Exclude root dir
 FILES_DONE_COUNT=0
 
 for file in $1/**/*.mp3; do

@@ -30,8 +30,6 @@ tag() {
   tag_file="$tag_root/$(get_md5 $1).tags"
 
   if [[ ! -e $tag_file ]]; then
-    echo "Tagging $1"
-
     if [[ ${errored_files[(r)$1]} == $1 ]]; then
       echo "Skipping $1, already errored."
       return 0
@@ -56,8 +54,14 @@ tag() {
   fi
 }
 
+FILES_COUNT=$(find $1 -type f -name "*.mp3" | wc -l)
+((FILES_COUNT -= 1)) # Exclude root dir
+FILES_DONE_COUNT=0
+
 for file in $1/**/*.mp3; do
   tag $file
+  ((FILES_DONE_COUNT++))
+  echo ${FILES_DONE_COUNT}/${FILES_COUNT}
 done
 
 node process-tags.js $tag_root $1

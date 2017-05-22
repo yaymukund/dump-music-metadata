@@ -2,12 +2,20 @@
 const TAG_LINE_REGEX = /^(original_path|duration|title|album|date|track|artist|TAG:artist|TAG:title|TAG:album|TAG:track|TAG:date)=(.+)$/;
 
 let fs = require('fs');
+let readline = require('readline');
 let path = require('path');
-let directory = process.argv[2];
-let musicRoot = process.argv[3];
+let directory = 'tags.cache';
+let musicRoot = process.argv[2];
+let destDir = process.argv[3];
 let tracks = [];
 let folders = new Map();
-let ProgressBar = require('progress');
+
+// Run with musicRoot and destDir
+//
+// e.g.:
+//
+// node process-tags.js ~/music ~/www/music-app
+//
 
 function _getTrackNumber(num) {
   num = num || 0;
@@ -36,6 +44,12 @@ function filenameFor(filepath) {
       end = filepath.lastIndexOf('.');
 
   return filepath.substr(start, end - start);
+}
+
+function notify(text) {
+  readline.clearLine(process.stdout, 0);
+  readline.cursorTo(process.stdout, 0);
+  process.stdout.write(text);
 }
 
 let trackId = 0;
@@ -112,40 +126,39 @@ function generateIndex() {
   });
 }
 
+function writeFileSync(name, contents) {
+  let fullPath = path.join(destDir, name);
+  console.log(`Writing ${fullPath}`);
+  fs.writeFileSync(fullPath, contents);
+}
+
 console.log(`Reading files from ${directory}`);
 
 readTags(directory).then(files => {
-  let progress = new ProgressBar('[:bar] :current/:total Building tracks list...', {
-    clear: true,
-    total: files.length
-  });
+  console.log();
 
-  files.forEach(file => {
+  files.forEach((file, i) => {
+    notify(`Making track ${i}/${files.length}`);
     let filepath = path.join(__dirname, directory, file);
     makeTrack(filepath);
-    progress.tick();
   });
 
-  progress = new ProgressBar('[:bar] :current/:total Building folders list...', {
-    clear: true,
-    total: tracks.length
-  });
+  console.log();
 
-  console.log('Building folders list...');
-  tracks.forEach(track => {
+  tracks.forEach((track, i) => {
+    notify(`Making folder ${i}/${tracks.length}`);
     let folder = makeFolderFor(track);
     track.folder_id = folder.id;
-    progress.tick();
   });
 
-  console.log('Building metadata_index...');
+  console.log();
+
   let indexJson = generateIndex(),
       json = {
         tracks,
         folders: Array.from(folders.values())
       };
 
-  console.log('Writing metadata files...');
-  fs.writeFileSync('metadata.json', JSON.stringify(json));
-  fs.writeFileSync('metadata_index.json', JSON.stringify(indexJson));
+  writeFileSync('metadata.json', JSON.stringify(json));
+  writeFileSync('metadata_index.json', JSON.stringify(indexJson));
 });

@@ -63,5 +63,4 @@ for file in $1/**/*.mp3; do
   echo ${FILES_DONE_COUNT}/${FILES_COUNT}
 done
 
-node process-tags.js $tag_root $1
 echo 'Completed tagging files'
